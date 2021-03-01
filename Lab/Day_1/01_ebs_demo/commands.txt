@@ -1,0 +1,98 @@
+EBS Volume Labs:
+1. Recognize the EBS volumes
+2. Recognize the EC2 Instances
+3. Create a EBS Volume and attach it to the Instance 1
+4. reboot the instance
+5. mount the EBS volume on the EC2 instance
+6. shutdown the instance 1
+7. de-attach the volume
+8. attach the volume to the EBS volume to instance 2
+9. Create a EBS snapshot
+10. mount a new volume using the snapshot
+11. cross region copy of the snapshot
+12. create a new volume and instance to test the volumes
+
+
+Instance Store Volume:
+1. create an m5dn.large instance
+2. mount the instance store volumes
+3. create a testfile
+4. restart the InstanceStoreTest
+5. check the testfile
+
+###############################################################################################
+
+# Commands User
+
+## Instance 1
+
+lsblk
+sudo file -s /dev/xvdf
+sudo mkfs -t xfs /dev/xvdf
+sudo file -s /dev/xvdf
+sudo mkdir /ebstest
+sudo mount /dev/xvdf /ebstest
+cd /ebstest
+sudo nano testfile.txt
+add a message
+save and exit
+ls -la
+
+## Reboot Instance 1
+
+sudo reboot
+
+## Instance 1 After Reboot
+
+df -k
+sudo blkid
+sudo nano /etc/fstab
+  ADD LINE
+  UUID=YOURUUIDHEREREPLACEME  /ebstest  xfs  defaults,nofail
+
+
+sudo mount -a
+cd /ebstest
+ls -la
+
+## Instance 2
+
+lsblk
+sudo file -s /dev/xvdf
+sudo mkdir /ebstest
+sudo mount /dev/xvdf /ebstest
+cd /ebstest
+ls -la
+
+## Instance 3
+
+lsblk
+sudo file -s /dev/xvdf
+sudo mkdir /ebstest
+sudo mount /dev/xvdf /ebstest
+cd /ebstest
+ls -la
+
+## InstanceStoreTest
+
+lsblk
+sudo file -s /dev/nvme1n1
+sudo mkfs -t xfs /dev/nvme1n1
+sudo file -s /dev/nvme1n1
+sudo mkdir /instancestore
+sudo mount /dev/nvme1n1 /instancestore
+cd /instancestore
+sudo touch instancestore.txt
+
+## InstancStoreTest - After Restart
+
+df -k
+its not there
+but we can mount it
+sudo mount /dev/nvme1n1 /instancestore
+cd /instancestore
+ls -la
+
+## InstanceStoreTest - After Stop/Start
+
+sudo file -s /dev/nvme1n1
